@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">OpenPot</string>
+    <string name="rice">Rice</string>
+    <string name="multigrain">Multigrain</string>
+    <string name="porridge">Porridge</string>
+    <string name="steam">Steam</string>
+    <string name="yogurt">Yogurt</string>
+    <string name="slow_cook">Slow Cook</string>
+    <string name="poultry">Poultry</string>
+    <string name="bean_chili">Bean/Chili</string>
+    <string name="meat_stew">Meat/Stew</string>
+    <string name="soup">Soup</string>
+    <string name="saute">Sauté</string>
+    <string name="manual">Manual</string>
+    <string name="keep_warm">Keep Warm</string>
+    <string name="cancel">Cancel</string>
+    <string name="work_mode" >Work Mode</string>
+    <string name="na">N/A</string>
+    <string name="remaining_time">Remaining Time</string>
+    <string name="temperature">Temperature</string>
+    <string name="pressure_level">Pressure Level</string>
+    <string name="heating_level">Heating Level</string>
+</resources>
