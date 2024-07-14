@@ -15,12 +15,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
-                android:src="@tools:sample/avatars" />
+                android:src="@tools:sample/avatars" /> -->
 
             <TextView
                 android:id="@+id/lblWorkMode"
@@ -49,12 +49,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
-                android:src="@tools:sample/avatars" />
+                android:src="@tools:sample/avatars" /> -->
 
             <TextView
                 android:id="@+id/lblRemainingTime"
@@ -82,12 +82,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
-                android:src="@tools:sample/avatars" />
+                android:src="@tools:sample/avatars" /> -->
 
             <TextView
                 android:id="@+id/lblTemperature"
@@ -115,12 +115,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
-                android:src="@tools:sample/avatars" />
+                android:src="@tools:sample/avatars" /> -->
 
             <TextView
                 android:id="@+id/lblPressureLevel"
@@ -148,12 +148,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
+            <!-- <ImageView
                 android:id="@+id/imageView5"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
-                android:src="@tools:sample/avatars" />
+                android:src="@tools:sample/avatars" /> -->
 
             <TextView
                 android:id="@+id/lblHeatingLevel"
@@ -189,6 +189,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/rice"
             android:textColor="@android:color/darker_gray" />
 
@@ -198,6 +199,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/multigrain"
             android:textColor="@android:color/darker_gray" />
 
@@ -207,6 +209,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/porridge"
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
@@ -222,6 +225,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/steam"
             android:textColor="@android:color/darker_gray"
             app:strokeColor="@color/black" />
@@ -232,6 +236,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/yogurt"
             android:textColor="@android:color/darker_gray" />
 
@@ -241,6 +246,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/slow_cook"
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
@@ -256,6 +262,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/poultry"
             android:textColor="@android:color/darker_gray" />
 
@@ -265,6 +272,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/bean_chili"
             android:textColor="@android:color/darker_gray" />
 
@@ -274,6 +282,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/meat_stew"
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
@@ -289,6 +298,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/soup"
             android:textColor="@android:color/darker_gray" />
 
@@ -298,6 +308,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/saute"
             android:textColor="@android:color/darker_gray" />
 
@@ -307,6 +318,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/manual"
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
@@ -322,6 +334,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="command"
             android:text="@string/keep_warm"
             android:textColor="@android:color/darker_gray" />
 
@@ -331,6 +344,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#00FFFFFF"
+            android:onClick="cancel"
             android:text="@string/cancel"
             android:textColor="@android:color/holo_red_dark" />
 
@@ -339,5 +353,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="5" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="connectToDevice"
+        android:text="@string/connect" />
 
 </LinearLayout>

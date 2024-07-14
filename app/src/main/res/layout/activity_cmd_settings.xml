@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CFCFCF"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/lblCommand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Command"
+        android:textAlignment="center"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/lblDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="10dp"
+        android:text="@string/duration"
+        android:textAllCaps="true"
+        android:textColor="#8f9193"
+        android:textSize="24sp" />
+        <!-- android:visibility="gone"/> -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:id="@+id/durationBlock">
+        <!-- android:visibility="gone"> -->
+
+        <TextView
+            android:id="@+id/lblDuration2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="15dp"
+            android:text="@string/duration"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/txtDurationTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:paddingRight="15dp"
+            android:textAlignment="textEnd"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblPressureLevel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="10dp"
+        android:text="@string/pressure_level"
+        android:textAllCaps="true"
+        android:textColor="#8f9193"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/pressureBlock"
+        android:visibility="gone">
+
+    <RadioButton
+        android:id="@+id/btnLow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/low"
+        android:checked="true"/>
+
+    <RadioButton
+        android:id="@+id/btnHigh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/high"
+        android:checked="false"/>
+
+</RadioGroup>
+
+<TextView
+    android:id="@+id/lblMode"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="5dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="10dp"
+    android:text="@string/mode"
+    android:textAllCaps="true"
+    android:textColor="#8f9193"
+    android:textSize="24sp"
+    android:visibility="gone"/>
+
+<RadioGroup
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/modeBlock"
+    android:visibility="gone">
+
+    <RadioButton
+        android:id="@+id/btnLess"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/less" />
+
+    <RadioButton
+        android:id="@+id/btnNormal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/normal" />
+
+    <RadioButton
+        android:id="@+id/btnMore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/more" />
+
+</RadioGroup>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:onClick="start"
+        android:text="@string/start"
+        android:textColor="#003549"
+        app:cornerRadius="5dp" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnDelayStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:text="@string/delay_start"
+        android:textColor="#003549"
+        app:cornerRadius="5dp" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+</LinearLayout>
+</LinearLayout>
