@@ -14,10 +14,21 @@
     <string name="manual">Manual</string>
     <string name="keep_warm">Keep Warm</string>
     <string name="cancel">Cancel</string>
-    <string name="work_mode" >Work Mode</string>
+    <string name="work_mode">Work Mode</string>
     <string name="na">N/A</string>
     <string name="remaining_time">Remaining Time</string>
     <string name="temperature">Temperature</string>
     <string name="pressure_level">Pressure Level</string>
     <string name="heating_level">Heating Level</string>
+    <string name="connect">Connect</string>
+    <string name="duration">Duration</string>
+    <string name="mode">Mode</string>
+    <string name="low">Low</string>
+    <string name="high">High</string>
+    <string name="less">Less</string>
+    <string name="normal">Normal</string>
+    <string name="more">More</string>
+    <string name="start">Start</string>
+    <string name="delay_start">Delay Start</string>
+    <string name="title_activity_command_settings">CommandSettings</string>
 </resources>
