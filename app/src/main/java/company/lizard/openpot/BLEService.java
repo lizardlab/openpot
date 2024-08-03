@@ -58,7 +58,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
     // Pressure L/H
     // Delay
     public void durationPressureMode(int duration, Pressure pressure, Timer timer, int delay, Mode mode, CommandType cmd){
-        byte[] cmdBase = hexStringToByteArray("aa555a010020300000001e0000000000000000"); // default
+        byte[] cmdBase = hexStringToByteArray("aa555a010020a00000001e0000000000000000");
         switch(cmd){
             case SOUP:
                 cmdBase[4] = 0x0A;
@@ -81,16 +81,21 @@ public class BLEService extends BleManager implements ConnectionObserver {
             case MULTIGRAIN:
                 cmdBase[4] = 0x02;
         }
-        if(pressure == Pressure.LOW) {
+        /* if(pressure == Pressure.LOW) {
             cmdBase[6] = 0x20;
-        }
+        } */
+        // seems like mode and pressure are interlinked. Base mode at low pressure is a, less is e and more is 6, and then high pressure is one added to each.
         if(mode == Mode.LESS){
-            // TODO: set mode
-            cmdBase[0] = 0x00;
+            cmdBase[6] = (byte) 0xe0;
+        }
+        else if(mode == Mode.NORMAL){
+            cmdBase[6] = (byte)0x60;
         }
         else if(mode == Mode.MORE){
-            // TODO: set mode
-            cmdBase[0] = 0x00;
+            cmdBase[6] = (byte)0xa0;
+        }
+        if(pressure == Pressure.HIGH){
+            cmdBase[6] += (byte)0x10;
         }
         cmdBase[9] = (byte)(duration / 60);
         cmdBase[10] = (byte)(duration % 60);
@@ -110,7 +115,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         Log.i(TAG, "Duration Pressure Mode");
     }
     public void manual(int duration, Pressure pressure, Timer timer, int delay){
-        byte[] manual = hexStringToByteArray("aa555a010c20300000001e0000000000000000"); // default
+        byte[] manual = hexStringToByteArray("aa555a010c20300000001e0000000000000000");
         if(pressure == Pressure.LOW) {
             manual[6] = 0x20;
         }
@@ -118,13 +123,13 @@ public class BLEService extends BleManager implements ConnectionObserver {
         manual[10] = (byte)(duration % 60);
         if(timer == Timer.TIMER1){
             manual[5] = 0x11;
-            manual[6] = (byte) (delay / 60);
-            manual[7] = (byte) (delay % 60);
+            manual[7] = (byte) (delay / 60);
+            manual[8] = (byte) (delay % 60);
         }
         else if(timer == Timer.TIMER2){
             manual[5] = 0x12;
-            manual[6] = (byte) (delay / 60);
-            manual[7] = (byte) (delay % 60);
+            manual[7] = (byte) (delay / 60);
+            manual[8] = (byte) (delay % 60);
         }
         calCheckCode(manual);
         writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
@@ -135,7 +140,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
     // Mode L/N/M
     // Delay
     public void keepWarm(int duration, Mode mode, Timer timer, int delay){
-        byte[] manual = hexStringToByteArray("aa555a010d204000000a000000000000000000"); // default
+        byte[] manual = hexStringToByteArray("aa555a010d204000000a000000000000000000");
         manual[9] = (byte)(duration / 60);
         manual[10] = (byte)(duration % 60);
         if(Mode.LESS == mode){
@@ -164,7 +169,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         byte[] saute = hexStringToByteArray("");
     }
     public void rice(Pressure pressure, Timer timer, int delay){
-        byte[] rice = hexStringToByteArray("aa555a01012030000000000000000000000000"); // default
+        byte[] rice = hexStringToByteArray("aa555a01012030000000000000000000000000");
         if(pressure == Pressure.LOW) {
             rice[6] = 0x20;
         }
@@ -190,7 +195,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         bytes[19] = (byte) ((checksum ^ 255) + 1);
     }
     public void cancel(){
-        byte[] cancel = hexStringToByteArray("aa555a010e0000000000000000000000000000"); // default
+        byte[] cancel = hexStringToByteArray("aa555a010e0000000000000000000000000000");
         calCheckCode(cancel);
         writeCharacteristic(openPotControlPoint, cancel, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();

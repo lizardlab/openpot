@@ -110,6 +110,9 @@ public class CommandSettings extends AppCompatActivity {
         else if(cmd.equalsIgnoreCase("rice")){
             bleService.rice(pressure, Timer.NONE, 0);
         }
+        else if(cmd.equalsIgnoreCase("keep warm")){
+            bleService.keepWarm(durationInt, mode, Timer.NONE, 0);
+        }
         else{
             bleService.durationPressureMode(durationInt, pressure, Timer.NONE, 0, mode, cmdSet.get(cmd.toLowerCase(Locale.ENGLISH)));
         }
