@@ -31,4 +31,6 @@
     <string name="start">Start</string>
     <string name="delay_start">Delay Start</string>
     <string name="title_activity_command_settings">CommandSettings</string>
+    <string name="pasteurize">Pasterize</string>
+    <string name="ferment">Ferment</string>
 </resources>

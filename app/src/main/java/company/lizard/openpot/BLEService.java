@@ -24,6 +24,11 @@ enum Mode{
     NORMAL,
     MORE
 }
+enum Yogurt{
+    PASTEURIZE,
+    YOGURT,
+    FERMENT
+}
 enum Timer{
     TIMER1,
     TIMER2,
@@ -162,6 +167,25 @@ public class BLEService extends BleManager implements ConnectionObserver {
         calCheckCode(manual);
         writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
+    }
+    public void yogurt(Yogurt yogurt, int duration){
+        byte[] yog = hexStringToByteArray("aa555a01052040000008000000000000000000");
+        if(yogurt == Yogurt.PASTEURIZE){
+            yog[6] = (byte)0xc0;
+        }
+        else if(yogurt == Yogurt.YOGURT){
+            yog[6] = (byte)0x40;
+        }
+        else if(yogurt == Yogurt.FERMENT){
+            yog[6] = (byte)0x80;
+        }
+        yog[9] = (byte)(duration / 60);
+        yog[10] = (byte)(duration % 60);
+        calCheckCode(yog);
+        writeCharacteristic(openPotControlPoint, yog, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
+                .enqueue();
+        Log.i(TAG, "Yogurt");
+        Log.i(TAG, toHex(ByteBuffer.wrap(yog)));
     }
     // Mode L/N/M
     // Delay

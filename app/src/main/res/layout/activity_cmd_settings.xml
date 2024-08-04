@@ -132,7 +132,46 @@
 
 </RadioGroup>
 
-<LinearLayout
+    <TextView
+        android:id="@+id/lblYogurt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="10dp"
+        android:text="@string/yogurt"
+        android:textAllCaps="true"
+        android:textColor="#8f9193"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+    <RadioGroup
+        android:id="@+id/yogurtBlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <RadioButton
+            android:id="@+id/btnPasteurize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pasteurize" />
+
+        <RadioButton
+            android:id="@+id/btnYogurtMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/yogurt" />
+
+        <RadioButton
+            android:id="@+id/btnFerment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ferment" />
+    </RadioGroup>
+
+    <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
@@ -157,14 +196,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btnDelayStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:text="@string/delay_start"
-        android:textColor="#003549"
-        app:cornerRadius="5dp" />
+        <Button
+            android:id="@+id/btnDelayStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:text="@string/delay_start"
+            android:textColor="#003549"
+            app:cornerRadius="5dp" />
 
     <Space
         android:layout_width="wrap_content"
