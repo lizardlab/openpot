@@ -41,6 +41,8 @@ public class CommandSettings extends AppCompatActivity {
             RadioGroup pressureBlk = findViewById(R.id.pressureBlock);
             TextView duration = findViewById(R.id.lblDuration);
             LinearLayout durationBlk = findViewById(R.id.durationBlock);
+            TextView yogurt = findViewById(R.id.lblYogurt);
+            RadioGroup yogurtBlk = findViewById(R.id.yogurtBlock);
             if(cmd.equalsIgnoreCase("manual")){
                 durationAmt.setText("30");
                 durationBlk.setVisibility(View.VISIBLE);
@@ -60,6 +62,8 @@ public class CommandSettings extends AppCompatActivity {
             else if(cmd.equalsIgnoreCase("yogurt")){
                 Button delayBtn = findViewById(R.id.btnDelayStart);
                 delayBtn.setVisibility(View.GONE);
+                yogurtBlk.setVisibility(View.VISIBLE);
+                yogurt.setVisibility(View.VISIBLE);
             }
             else{
                 durationAmt.setText("30");
@@ -112,6 +116,21 @@ public class CommandSettings extends AppCompatActivity {
         }
         else if(cmd.equalsIgnoreCase("keep warm")){
             bleService.keepWarm(durationInt, mode, Timer.NONE, 0);
+        }
+        else if(cmd.equalsIgnoreCase("yogurt")){
+            RadioGroup yogurtBlk = findViewById(R.id.yogurtBlock);
+            RadioButton selectedYogurt = findViewById(modeBlk.getCheckedRadioButtonId());
+            Yogurt yogurt;
+            if(selectedYogurt.getText().equals("Pasteurize")){
+                yogurt = Yogurt.PASTEURIZE;
+            }
+            else if(selectedYogurt.getText().equals("Ferment")){
+                yogurt = Yogurt.FERMENT;
+            }
+            else {
+                yogurt = Yogurt.YOGURT;
+            }
+            bleService.yogurt(yogurt, durationInt);
         }
         else{
             bleService.durationPressureMode(durationInt, pressure, Timer.NONE, 0, mode, cmdSet.get(cmd.toLowerCase(Locale.ENGLISH)));
