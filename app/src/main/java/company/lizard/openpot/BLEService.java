@@ -1,18 +1,27 @@
 package company.lizard.openpot;
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
+import no.nordicsemi.android.ble.callback.DataReceivedCallback;
 import no.nordicsemi.android.ble.data.Data;
 import no.nordicsemi.android.ble.observer.ConnectionObserver;
 enum Pressure{
@@ -46,13 +55,22 @@ enum CommandType{
 public class BLEService extends BleManager implements ConnectionObserver {
     final String TAG = BLEService.class.getSimpleName();
     final private UUID OPENPOT_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
-    private UUID OPENPOT_CHAR_UUID = UUID.fromString("0000dab1-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_CHAR_UUID = UUID.fromString("0000dab1-0000-1000-8000-00805F9B34FB");
+    final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_24HR_UUID = UUID.fromString("0000daa4-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_CLOCK_UUID = UUID.fromString("0000daa1-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_NOTIFY_UUID = UUID.fromString("0000dab2-0000-1000-8000-00805F9B34FB");
+    private BluetoothGattCharacteristic openPotControlPoint;
+    private BluetoothGattCharacteristic openPot24hrBit;
+    private BluetoothGattCharacteristic openPotClock;
+    private  BluetoothGattCharacteristic openPotTelemetry;
     BLEService bleService;
     private static BLEService instance;
     public BLEService(@NonNull final Context context){
         super(context);
         setConnectionObserver(this);
     }
+
     public static synchronized BLEService getInstance(Context context){
         if(instance == null){
             instance = new BLEService(context);
@@ -211,6 +229,39 @@ public class BLEService extends BleManager implements ConnectionObserver {
         writeCharacteristic(openPotControlPoint, rice, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
     }
+    public void setTime(){
+        // Define the custom epoch start date and time
+        LocalDateTime customEpoch = LocalDateTime.of(2000, 12, 31, 23, 59, 59);
+
+        // Get the current local date and time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Convert both times to seconds since epoch
+        long customEpochSeconds = customEpoch.toEpochSecond(ZoneOffset.UTC);
+        long nowSeconds = now.toEpochSecond(ZoneOffset.UTC);
+
+        // Calculate the difference in seconds
+        int secondsSinceCustomEpoch = (int)(nowSeconds - customEpochSeconds);
+
+        // Convert the difference to a byte array in little-endian order
+        ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(secondsSinceCustomEpoch);
+        writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
+    }
+    public int getTime(){
+        return 0;
+    }
+    public boolean is24Hr(){
+        readCharacteristic(openPot24hrBit).enqueue();
+        return false;
+    }
+    public void set24Hr(boolean is24Hr){
+        byte[] milTime = new byte[1];
+        milTime[0] = (byte)(is24Hr ? 0 : 1);
+        writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
+    }
+
     public void calCheckCode(byte[] bytes) {
         byte checksum = 0;
         for (int i = 0; i < bytes.length - 1; i++) {
@@ -224,6 +275,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         writeCharacteristic(openPotControlPoint, cancel, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
         Log.i(TAG, "Cancel");
+
     }
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
@@ -242,12 +294,15 @@ public class BLEService extends BleManager implements ConnectionObserver {
         return sb.toString();
     }
 
-    private BluetoothGattCharacteristic openPotControlPoint;
     @Override
     protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt){
         BluetoothGattService openPotService = gatt.getService(OPENPOT_SERVICE_UUID);
+        BluetoothGattService openPotTimeService = gatt.getService(OPENPOT_TIME_SERVICE_UUID);
         if(openPotService != null){
             openPotControlPoint = openPotService.getCharacteristic(OPENPOT_CHAR_UUID);
+            openPotTelemetry = openPotService.getCharacteristic(OPENPOT_NOTIFY_UUID);
+            openPot24hrBit = openPotTimeService.getCharacteristic(OPENPOT_24HR_UUID);
+            openPotClock = openPotTimeService.getCharacteristic(OPENPOT_CLOCK_UUID);
             return true;
         }
         return false;
@@ -258,19 +313,35 @@ public class BLEService extends BleManager implements ConnectionObserver {
     public void onDeviceDisconnecting(@NonNull final BluetoothDevice device){
         Log.i(TAG, "Device Disconnecting");
     }
+    void onDataReceived(@NonNull final BluetoothDevice device, @NonNull final Data data){
+        Intent intent = new Intent("company.lizard.openpot.TELEMETRY_NOTIFY");
+        intent.putExtra("TELEMETRY", data.getValue());
+        OPApplication.getContext().sendBroadcast(intent);
+    }
     @SuppressLint("MissingPermission")
     public void onDeviceConnected(@NonNull final BluetoothDevice device){
         //broadcastUpdate(CONNECTED, device.getName());
-        Log.i(TAG, "Device Connected");
+        Intent intent = new Intent("company.lizard.openpot.CONNECTED");
+        OPApplication.getContext().sendBroadcast(intent);
     }
     public void onDeviceFailedToConnect(@NonNull final BluetoothDevice device, int status){
         Log.i(TAG, "Device failed to connect");
     }
     public void onDeviceReady(@NonNull final BluetoothDevice device){
+        setNotificationCallback(openPotTelemetry).with(this::onDataReceived);
+        enableNotifications(openPotTelemetry).enqueue();
         Log.i(TAG, "Device Ready");
     }
     @SuppressLint("MissingPermission")
     public void onDeviceDisconnected(@NonNull final BluetoothDevice device, int status){
         //broadcastUpdate(DISCONNECTED, device.getName());
+        Intent intent = new Intent("company.lizard.openpot.DISCONNECTED");
+        OPApplication.getContext().sendBroadcast(intent);
     }
+    /* public static class DataSender extends Service{
+        @Override
+        public IBinder onBind(Intent intent){
+
+        }
+    } */
 }

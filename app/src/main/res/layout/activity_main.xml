@@ -7,13 +7,21 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/icnIndicator"
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:layout_gravity="right|top"
+        app:srcCompat="@drawable/openpot"
+        tools:srcCompat="@drawable/openpot" />
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- <ImageView
                 android:id="@+id/imageView"
@@ -47,7 +55,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- <ImageView
                 android:id="@+id/imageView2"
@@ -80,7 +88,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- <ImageView
                 android:id="@+id/imageView3"
@@ -113,7 +121,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- <ImageView
                 android:id="@+id/imageView4"
@@ -132,7 +140,7 @@
                 android:text="@string/pressure_level" />
 
             <TextView
-                android:id="@+id/txtPressuireLevel"
+                android:id="@+id/txtPressureLevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -146,7 +154,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <!-- <ImageView
                 android:id="@+id/imageView5"

@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="checked">#0C75D1</color>
+    <color name="settings">#AAAAAA</color>
 </resources>
