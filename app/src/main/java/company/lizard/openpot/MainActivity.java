@@ -3,6 +3,7 @@ package company.lizard.openpot;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -14,16 +15,21 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final long SCAN_PERIOD = 10000;
     private boolean scanning = false;
     private Handler handler = new Handler();
+    //private DataReceiver receiver = new DataReceiver(); // Create the receiver
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +116,20 @@ public class MainActivity extends AppCompatActivity {
         if (btAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
         }
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        IntentFilter intFilter = new IntentFilter("company.lizard.openpot.TELEMETRY_NOTIFY");
+        intFilter.addAction("company.lizard.openpot.CONNECTED");
+        intFilter.addAction("company.lizard.openpot.DISCONNECTED");
+        Intent test = ContextCompat.registerReceiver(this, dataReceiver, intFilter, ContextCompat.RECEIVER_EXPORTED); // Register receiver
+        //Log.i(TAG, test.toString());
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        unregisterReceiver(dataReceiver);
     }
     public void connectToDevice(View view){
         bluetoothLeScanner = btAdapter.getBluetoothLeScanner();
@@ -180,5 +201,66 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         bleService.disconnect();
+    }
+    BroadcastReceiver dataReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent){
+            intent.getAction();
+            if (intent.getAction().equals("company.lizard.openpot.CONNECTED")){
+                ImageView connectionIndic = findViewById(R.id.icnIndicator);
+                connectionIndic.setImageResource(R.drawable.openpot_active);
+            }
+            else if(intent.getAction().equals("company.lizard.openpot.DISCONNECTED")){
+                ImageView connectionIndic = findViewById(R.id.icnIndicator);
+                connectionIndic.setImageResource(R.drawable.openpot);
+            }
+            else{
+                byte[] data = intent.getByteArrayExtra("TELEMETRY");
+
+                TextView timeRemaining = findViewById(R.id.txtRemainingTime);
+                TextView workMode = findViewById(R.id.txtWorkMode);
+                TextView pressureLevel = findViewById(R.id.txtPressureLevel);
+                TextView heatingLevel = findViewById(R.id.txtHeatingLevel);
+                switch((int)data[4]){
+                    case 0xE:
+                        workMode.setText(R.string.warm);
+                        break;
+                    case 0xD:
+                        workMode.setText(R.string.warm);
+                        break;
+                    case 0xC:
+                        workMode.setText(R.string.on);
+                        break;
+                    case 0xB:
+                        workMode.setText(R.string.timer);
+                        break;
+                    default:
+                        workMode.setText(R.string.off);
+                        break;
+                }
+                double heatingLvl = (int)data[13] / 16.0 * 100.0;
+                String heatingTxt = heatingLvl + "%";
+                heatingLevel.setText(heatingTxt);
+                int mins = data[10];
+                int hrs = data[9];
+                String timeRemain;
+                if(hrs == 0){
+                    timeRemain = String.valueOf(mins);
+                }
+                else{
+                    timeRemain = hrs  + ":" + mins;
+                }
+
+                timeRemaining.setText(timeRemain);
+                Log.i("BR", toHex(ByteBuffer.wrap(data)));
+            }
+        }
+    };
+    public static String toHex(ByteBuffer bb) {
+        StringBuilder sb = new StringBuilder();
+        while (bb.hasRemaining()) {
+            sb.append(String.format("%02X", bb.get()));
+        }
+        return sb.toString();
     }
 }
