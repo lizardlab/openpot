@@ -31,7 +31,7 @@
     <string name="start">Start</string>
     <string name="delay_start">Delay Start</string>
     <string name="title_activity_command_settings">CommandSettings</string>
-    <string name="pasteurize">Pasterize</string>
+    <string name="pasteurize">Pasteurize</string>
     <string name="ferment">Ferment</string>
     <string name="title_activity_pot_settings">PotSettingsActivity</string>
 
@@ -61,4 +61,5 @@
     <string name="timer">Timer</string>
     <string name="warm">Warm</string>
     <string name="off">Off</string>
+    <string name="none">None</string>
 </resources>
