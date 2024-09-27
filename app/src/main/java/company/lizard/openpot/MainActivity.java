@@ -238,6 +238,21 @@ public class MainActivity extends AppCompatActivity {
                         workMode.setText(R.string.off);
                         break;
                 }
+                int pressureLvl = (int)data[11] >> 4 & 15;
+                switch(pressureLvl){
+                    case 9:
+                        pressureLevel.setText(R.string.none);
+                        break;
+                    case 10: // 0xAx
+                        pressureLevel.setText(R.string.low);
+                        break;
+                    case 11: // 0xBx
+                        pressureLevel.setText(R.string.high);
+                        break;
+                    default:
+                        pressureLevel.setText(R.string.none);
+                        break;
+                }
                 double heatingLvl = (int)data[13] / 16.0 * 100.0;
                 String heatingTxt = heatingLvl + "%";
                 heatingLevel.setText(heatingTxt);
