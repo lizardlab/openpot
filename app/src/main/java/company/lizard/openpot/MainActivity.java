@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.nio.ByteBuffer;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -149,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         //bleService.manual(30, Pressure.HIGH, Timer.NONE,0);
     }
+    public void settings(View view){
+        Intent intent = new Intent(getApplicationContext(), PotSettings.class);
+        startActivity(intent);
+    }
     public void cancel(View view){ bleService.cancel(); }
     @SuppressLint("MissingPermission")
     private void scanLeDevice() {
@@ -216,57 +221,67 @@ public class MainActivity extends AppCompatActivity {
             }
             else{
                 byte[] data = intent.getByteArrayExtra("TELEMETRY");
+                if(data[2] == (byte)0x40){
+                    TextView timeRemaining = findViewById(R.id.txtRemainingTime);
+                    TextView workMode = findViewById(R.id.txtWorkMode);
+                    TextView temperature = findViewById(R.id.txtTemperature);
+                    TextView pressureLevel = findViewById(R.id.txtPressureLevel);
+                    TextView heatingLevel = findViewById(R.id.txtHeatingLevel);
+                    switch((int)data[4]){
+                        case 0xE:
+                            workMode.setText(R.string.warm);
+                            break;
+                        case 0xD:
+                            workMode.setText(R.string.warm);
+                            break;
+                        case 0xC:
+                            workMode.setText(R.string.on);
+                            break;
+                        case 0xB:
+                            workMode.setText(R.string.timer);
+                            break;
+                        default:
+                            workMode.setText(R.string.off);
+                            break;
+                    }
+                    int pressureLvl = (int)data[11] >> 4 & 15;
+                    switch(pressureLvl){
+                        case 5:
+                            pressureLevel.setText(R.string.lid_open);
+                            break;
+                        case 9:
+                            pressureLevel.setText(R.string.none);
+                            break;
+                        case 10: // 0xAx
+                            pressureLevel.setText(R.string.low);
+                            break;
+                        case 11: // 0xBx
+                            pressureLevel.setText(R.string.high);
+                            break;
+                        default:
+                            pressureLevel.setText(R.string.none);
+                            break;
+                    }
+                    double heatingLvl = (int)data[13] / 16.0 * 100.0;
+                    String heatingTxt = heatingLvl + "%";
+                    byte[] adData = new byte[4];
+                    adData[0] = data[12];
+                    int adVal = bytesToInt(adData);
+                    int temp = Integer.parseInt(TemperatureHelper.fromADToC(String.valueOf(adVal)));
+                    temperature.setText(String.format(Locale.US,"%d",temp));
+                    heatingLevel.setText(heatingTxt);
+                    int mins = data[10];
+                    int hrs = data[9];
+                    String timeRemain;
+                    if(hrs == 0){
+                        timeRemain = String.valueOf(mins);
+                    }
+                    else{
+                        timeRemain = hrs  + ":" + mins;
+                    }
 
-                TextView timeRemaining = findViewById(R.id.txtRemainingTime);
-                TextView workMode = findViewById(R.id.txtWorkMode);
-                TextView pressureLevel = findViewById(R.id.txtPressureLevel);
-                TextView heatingLevel = findViewById(R.id.txtHeatingLevel);
-                switch((int)data[4]){
-                    case 0xE:
-                        workMode.setText(R.string.warm);
-                        break;
-                    case 0xD:
-                        workMode.setText(R.string.warm);
-                        break;
-                    case 0xC:
-                        workMode.setText(R.string.on);
-                        break;
-                    case 0xB:
-                        workMode.setText(R.string.timer);
-                        break;
-                    default:
-                        workMode.setText(R.string.off);
-                        break;
+                    timeRemaining.setText(timeRemain);
                 }
-                int pressureLvl = (int)data[11] >> 4 & 15;
-                switch(pressureLvl){
-                    case 9:
-                        pressureLevel.setText(R.string.none);
-                        break;
-                    case 10: // 0xAx
-                        pressureLevel.setText(R.string.low);
-                        break;
-                    case 11: // 0xBx
-                        pressureLevel.setText(R.string.high);
-                        break;
-                    default:
-                        pressureLevel.setText(R.string.none);
-                        break;
-                }
-                double heatingLvl = (int)data[13] / 16.0 * 100.0;
-                String heatingTxt = heatingLvl + "%";
-                heatingLevel.setText(heatingTxt);
-                int mins = data[10];
-                int hrs = data[9];
-                String timeRemain;
-                if(hrs == 0){
-                    timeRemain = String.valueOf(mins);
-                }
-                else{
-                    timeRemain = hrs  + ":" + mins;
-                }
-
-                timeRemaining.setText(timeRemain);
                 Log.i("BR", toHex(ByteBuffer.wrap(data)));
             }
         }
@@ -277,5 +292,21 @@ public class MainActivity extends AppCompatActivity {
             sb.append(String.format("%02X", bb.get()));
         }
         return sb.toString();
+    }
+    public static int bytesToInt(byte[] bytes) {
+        if (bytes == null) {
+            return 0;
+        }
+        int ret = 0;
+        int[] ints = new int[4];
+        int i = 0;
+        while (i < bytes.length && i < ints.length) {
+            ints[i] = bytes[i] & 255;
+            i++;
+        }
+        for (int i2 = 0; i2 < ints.length; i2++) {
+            ret |= ints[i2] << (i2 * 8);
+        }
+        return ret;
     }
 }

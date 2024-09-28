@@ -62,4 +62,5 @@
     <string name="warm">Warm</string>
     <string name="off">Off</string>
     <string name="none">None</string>
+    <string name="lid_open">Lid Open</string>
 </resources>

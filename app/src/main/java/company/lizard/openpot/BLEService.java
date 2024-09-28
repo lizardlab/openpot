@@ -231,7 +231,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
     }
     public void setTime(){
         // Define the custom epoch start date and time
-        LocalDateTime customEpoch = LocalDateTime.of(2000, 12, 31, 23, 59, 59);
+        LocalDateTime customEpoch = LocalDateTime.of(2001, 1, 1, 0, 0, 0);
 
         // Get the current local date and time
         LocalDateTime now = LocalDateTime.now();
@@ -250,6 +250,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
     }
     public int getTime(){
+        readCharacteristic(openPotClock).enqueue();
         return 0;
     }
     public boolean is24Hr(){
