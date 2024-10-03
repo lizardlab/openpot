@@ -10,19 +10,18 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 public class CommandSettings extends AppCompatActivity {
     private String cmd;
     final String TAG = MainActivity.class.getSimpleName();
     BLEService bleService;
+    private Yogurt yogurt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +43,14 @@ public class CommandSettings extends AppCompatActivity {
             TextView yogurt = findViewById(R.id.lblYogurt);
             RadioGroup yogurtBlk = findViewById(R.id.yogurtBlock);
             if(cmd.equalsIgnoreCase("manual")){
-                durationAmt.setText("30");
+                durationAmt.setText(R.string.thirty);
                 durationBlk.setVisibility(View.VISIBLE);
                 duration.setVisibility(View.VISIBLE);
                 pressure.setVisibility(View.VISIBLE);
                 pressureBlk.setVisibility(View.VISIBLE);
             }
             else if(cmd.equalsIgnoreCase("keep warm")){
-                durationAmt.setText("10");
+                durationAmt.setText(R.string.ten);
                 durationBlk.setVisibility(View.VISIBLE);
 
             }
@@ -66,7 +65,7 @@ public class CommandSettings extends AppCompatActivity {
                 yogurt.setVisibility(View.VISIBLE);
             }
             else{
-                durationAmt.setText("30");
+                durationAmt.setText(R.string.thirty);
                 durationBlk.setVisibility(View.VISIBLE);
                 duration.setVisibility(View.VISIBLE);
                 pressure.setVisibility(View.VISIBLE);
@@ -119,7 +118,7 @@ public class CommandSettings extends AppCompatActivity {
         }
         else if(cmd.equalsIgnoreCase("yogurt")){
             RadioGroup yogurtBlk = findViewById(R.id.yogurtBlock);
-            RadioButton selectedYogurt = findViewById(modeBlk.getCheckedRadioButtonId());
+            RadioButton selectedYogurt = findViewById(yogurtBlk.getCheckedRadioButtonId());
             Yogurt yogurt;
             if(selectedYogurt.getText().equals("Pasteurize")){
                 yogurt = Yogurt.PASTEURIZE;

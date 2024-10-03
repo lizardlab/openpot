@@ -63,4 +63,6 @@
     <string name="off">Off</string>
     <string name="none">None</string>
     <string name="lid_open">Lid Open</string>
+    <string name="thirty">30</string>
+    <string name="ten">10</string>
 </resources>

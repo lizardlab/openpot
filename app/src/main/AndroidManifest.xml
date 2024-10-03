@@ -15,15 +15,15 @@
         android:required="true" />
 
     <application
+        android:name=".OPApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenPot"
-        tools:targetApi="31"
-        android:name="company.lizard.openpot.OPApplication">
+        tools:targetApi="31">
         <activity
-            android:name=".PotSettings"
+            android:name=".AppSettings"
             android:exported="false" />
         <activity
             android:name=".CommandSettings"

@@ -1,15 +1,11 @@
 package company.lizard.openpot;
 import android.annotation.SuppressLint;
-import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -64,7 +60,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
     private BluetoothGattCharacteristic openPot24hrBit;
     private BluetoothGattCharacteristic openPotClock;
     private  BluetoothGattCharacteristic openPotTelemetry;
-    BLEService bleService;
     private static BLEService instance;
     public BLEService(@NonNull final Context context){
         super(context);
@@ -104,9 +99,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
             case MULTIGRAIN:
                 cmdBase[4] = 0x02;
         }
-        /* if(pressure == Pressure.LOW) {
-            cmdBase[6] = 0x20;
-        } */
         // seems like mode and pressure are interlinked. Base mode at low pressure is a, less is e and more is 6, and then high pressure is one added to each.
         if(mode == Mode.LESS){
             cmdBase[6] = (byte) 0xe0;
@@ -205,11 +197,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
         Log.i(TAG, "Yogurt");
         Log.i(TAG, toHex(ByteBuffer.wrap(yog)));
     }
-    // Mode L/N/M
-    // Delay
-    public void saute(Mode mode, int delay, Timer timer){
-        byte[] saute = hexStringToByteArray("");
-    }
     public void rice(Pressure pressure, Timer timer, int delay){
         byte[] rice = hexStringToByteArray("aa555a01012030000000000000000000000000");
         if(pressure == Pressure.LOW) {
@@ -249,13 +236,13 @@ public class BLEService extends BleManager implements ConnectionObserver {
         buffer.putInt(secondsSinceCustomEpoch);
         writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
     }
-    public int getTime(){
+    public void getTime(){
         readCharacteristic(openPotClock).enqueue();
-        return 0;
     }
-    public boolean is24Hr(){
+    public void is24Hr(){
         readCharacteristic(openPot24hrBit).enqueue();
-        return false;
+    }
+    public void getTimer1(){
     }
     public void set24Hr(boolean is24Hr){
         byte[] milTime = new byte[1];
@@ -294,6 +281,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
         }
         return sb.toString();
     }
+
 
     @Override
     protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt){
@@ -339,10 +327,4 @@ public class BLEService extends BleManager implements ConnectionObserver {
         Intent intent = new Intent("company.lizard.openpot.DISCONNECTED");
         OPApplication.getContext().sendBroadcast(intent);
     }
-    /* public static class DataSender extends Service{
-        @Override
-        public IBinder onBind(Intent intent){
-
-        }
-    } */
 }

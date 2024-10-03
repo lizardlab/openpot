@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -36,11 +37,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainActivity extends AppCompatActivity {
     BluetoothAdapter btAdapter;
     private BluetoothManager btManager;
-    private String btDeviceAddress;
     BLEService bleService;
     private BluetoothLeScanner bluetoothLeScanner;
-    final String TAG = MainActivity.class.getSimpleName();;
-    private int mConnectionState = STATE_DISCONNECTED;
+    final String TAG = MainActivity.class.getSimpleName();
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
@@ -67,9 +66,6 @@ public class MainActivity extends AppCompatActivity {
                             if (fineLocationGranted != null && fineLocationGranted) {
                                 // Precise location access granted.
                                 haveLocationPerms.set(true);
-                            } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                                // Only approximate location access granted.
-                            } else {
                             }
                         }
                 );
@@ -84,12 +80,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setTitle("This app needs location access");
             builder.setMessage("Please grant location access so this app can detect peripherals.");
             builder.setPositiveButton(android.R.string.ok, null);
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                }
-            });
+            builder.setOnDismissListener(dialog -> requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1));
             builder.show();
         }
         if (this.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
@@ -97,9 +88,8 @@ public class MainActivity extends AppCompatActivity {
             builder.setTitle("This app needs location access");
             builder.setMessage("Please grant location access so this app can detect peripherals.");
             builder.setPositiveButton(android.R.string.ok, null);
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
+            builder.setOnDismissListener(dialog -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN}, 1);
                 }
             });
@@ -135,12 +125,6 @@ public class MainActivity extends AppCompatActivity {
     public void connectToDevice(View view){
         bluetoothLeScanner = btAdapter.getBluetoothLeScanner();
         scanLeDevice();
-        if(mConnectionState == STATE_DISCONNECTED){
-
-        }
-        else{
-            disconnect();
-        }
     }
     public void command(View view){
         Button btn = (Button)view;
@@ -151,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         //bleService.manual(30, Pressure.HIGH, Timer.NONE,0);
     }
     public void settings(View view){
-        Intent intent = new Intent(getApplicationContext(), PotSettings.class);
+        Intent intent = new Intent(getApplicationContext(), AppSettings.class);
         startActivity(intent);
     }
     public void cancel(View view){ bleService.cancel(); }
@@ -159,13 +143,9 @@ public class MainActivity extends AppCompatActivity {
     private void scanLeDevice() {
         if (!scanning) {
             // Stops scanning after a predefined scan period.
-            handler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    scanning = false;
-                    bluetoothLeScanner.stopScan(leScanCallback);
-                }
+            handler.postDelayed(() -> {
+                scanning = false;
+                bluetoothLeScanner.stopScan(leScanCallback);
             }, SCAN_PERIOD);
             Log.i(TAG, "Started Scan");
             scanning = true;
@@ -184,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
                     if( result.getDevice().getName() != null && result.getDevice().getName().equals("Instant Pot Smart")){
-                        btDeviceAddress = result.getDevice().getAddress();
+                        String btDeviceAddress = result.getDevice().getAddress();
                         BluetoothDevice device = btAdapter.getRemoteDevice(btDeviceAddress);
                         if (device == null) {
                             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -195,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
                         device.createBond();
                         bleService.connect(device).enqueue();
                         Log.i(TAG, "Connected Instant Pot bluetooth");
-                        //bluetoothLeScanner.stopScan(leScanCallback);
                     }
                 }
             };
