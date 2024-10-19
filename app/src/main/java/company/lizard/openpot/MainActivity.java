@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intFilter = new IntentFilter("company.lizard.openpot.TELEMETRY_NOTIFY");
         intFilter.addAction("company.lizard.openpot.CONNECTED");
         intFilter.addAction("company.lizard.openpot.DISCONNECTED");
+        intFilter.addAction("company.lizard.openpot.TWENTY_FOUR");
         Intent test = ContextCompat.registerReceiver(this, dataReceiver, intFilter, ContextCompat.RECEIVER_EXPORTED); // Register receiver
         //Log.i(TAG, test.toString());
     }
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
     public void settings(View view){
         Intent intent = new Intent(getApplicationContext(), AppSettings.class);
         startActivity(intent);
+        //bleService.is24Hr();
     }
     public void cancel(View view){ bleService.cancel(); }
     @SuppressLint("MissingPermission")
@@ -189,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver dataReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent){
-            intent.getAction();
             if (intent.getAction().equals("company.lizard.openpot.CONNECTED")){
                 ImageView connectionIndic = findViewById(R.id.icnIndicator);
                 connectionIndic.setImageResource(R.drawable.openpot_active);
@@ -197,6 +198,16 @@ public class MainActivity extends AppCompatActivity {
             else if(intent.getAction().equals("company.lizard.openpot.DISCONNECTED")){
                 ImageView connectionIndic = findViewById(R.id.icnIndicator);
                 connectionIndic.setImageResource(R.drawable.openpot);
+            }
+            else if(intent.getAction().equals("company.lizard.openpot.TWENTY_FOUR")){
+                byte[] data = intent.getByteArrayExtra("VALUE");
+                if(data[0] == 0){
+                    Log.d(TAG, "24 hour");
+                }
+                else{
+                    Log.d(TAG, "12 hour");
+                }
+
             }
             else{
                 byte[] data = intent.getByteArrayExtra("TELEMETRY");

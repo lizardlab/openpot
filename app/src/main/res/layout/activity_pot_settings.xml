@@ -7,9 +7,10 @@
     android:layout_width="409dp"
     android:layout_height="729dp"
     android:orientation="vertical"
+    android:paddingHorizontal="30dp"
+    tools:context=".AppSettings"
     tools:layout_editor_absoluteX="1dp"
-    tools:layout_editor_absoluteY="1dp"
-    tools:context=".PotSettings">
+    tools:layout_editor_absoluteY="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +21,8 @@
             android:id="@+id/lblTempUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_marginVertical="10dp"
+            android:layout_marginLeft="10dp"
             android:text="@string/temperature_unit" />
 
         <Space
@@ -33,14 +34,16 @@
             android:id="@+id/txtTempUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginRight="10dp"
             android:layout_marginVertical="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:onClick="toggleSI"
+            android:text="ºF"
             android:textAlignment="textEnd"
-            android:textColor="@color/settings"
-            android:text="ºF" />
+            android:textColor="@color/settings" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,9 +65,10 @@
             android:id="@+id/btnElevAdjust"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -90,6 +94,7 @@
             android:checked="false" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,9 +106,11 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:layout_marginLeft="10dp"
+            android:onClick="syncTime"
             android:text="@string/sync_time" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -125,9 +132,10 @@
             android:id="@+id/btnMilTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -137,8 +145,8 @@
             android:id="@+id/lblTimer1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_marginVertical="10dp"
+            android:layout_marginLeft="10dp"
             android:text="@string/timer1" />
 
         <Space
@@ -147,17 +155,41 @@
             android:layout_weight="2" />
 
         <TextView
-            android:id="@+id/txtTimer1"
+            android:id="@+id/lblHr1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:text="H" />
+
+        <TextView
+            android:id="@+id/txtTimerHr1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
+            android:layout_weight="1"
             android:textAlignment="textEnd"
-            android:layout_marginRight="10dp"
-            android:textColor="@color/settings"
-            android:text="00:17"/>
+            android:textColor="@color/settings" />
+
+        <TextView
+            android:id="@+id/lblMin1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="M" />
+
+        <TextView
+            android:id="@+id/txtTimerMin1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:textColor="@color/settings" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -177,15 +209,38 @@
             android:layout_weight="2" />
 
         <TextView
-            android:id="@+id/txtTimer2"
+            android:id="@+id/lblHr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:text="H" />
+
+        <TextView
+            android:id="@+id/txtTimerHr2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
+            android:layout_weight="1"
             android:textAlignment="textEnd"
-            android:layout_marginRight="10dp"
-            android:textColor="@color/settings"
-            android:text="11:30"/>
+            android:textColor="@color/settings" />
+
+        <TextView
+            android:id="@+id/lblMin2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="M" />
+
+        <TextView
+            android:id="@+id/txtTimerMin2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:textColor="@color/settings" />
 
     </LinearLayout>
 
