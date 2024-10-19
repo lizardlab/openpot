@@ -52,14 +52,18 @@ public class BLEService extends BleManager implements ConnectionObserver {
     final String TAG = BLEService.class.getSimpleName();
     final private UUID OPENPOT_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_CHAR_UUID = UUID.fromString("0000dab1-0000-1000-8000-00805F9B34FB");
-    final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
+    final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000daa0-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_24HR_UUID = UUID.fromString("0000daa4-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_CLOCK_UUID = UUID.fromString("0000daa1-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_NOTIFY_UUID = UUID.fromString("0000dab2-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_TIMER1_UUID = UUID.fromString("0000daa2-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_TIMER2_UUID = UUID.fromString("0000daa3-0000-1000-8000-00805F9B34FB");
     private BluetoothGattCharacteristic openPotControlPoint;
     private BluetoothGattCharacteristic openPot24hrBit;
     private BluetoothGattCharacteristic openPotClock;
-    private  BluetoothGattCharacteristic openPotTelemetry;
+    private BluetoothGattCharacteristic openPotTelemetry;
+    private BluetoothGattCharacteristic openPotTimer1;
+    private BluetoothGattCharacteristic openPotTimer2;
     private static BLEService instance;
     public BLEService(@NonNull final Context context){
         super(context);
@@ -236,19 +240,55 @@ public class BLEService extends BleManager implements ConnectionObserver {
         buffer.putInt(secondsSinceCustomEpoch);
         writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
     }
-    public void getTime(){
-        readCharacteristic(openPotClock).enqueue();
-    }
     public void is24Hr(){
-        readCharacteristic(openPot24hrBit).enqueue();
-    }
-    public void getTimer1(){
+        readCharacteristic(openPot24hrBit).with((device, data) -> {
+            Intent intent = new Intent("company.lizard.openpot.TWENTY_FOUR");
+            intent.putExtra("VALUE", data.getValue());
+            OPApplication.getContext().sendBroadcast(intent);
+        }).fail((@NonNull() BluetoothDevice device, int status) -> {
+            Log.d(TAG, "24 hr read failed " + status);
+        }).enqueue();
     }
     public void set24Hr(boolean is24Hr){
         byte[] milTime = new byte[1];
         milTime[0] = (byte)(is24Hr ? 0 : 1);
-        writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
+        writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
     }
+    public void getTimer1(){
+        readCharacteristic(openPotTimer2).with((device, data) -> {
+            Intent intent = new Intent("company.lizard.openpot.TIMER1");
+            intent.putExtra("VALUE", data.getValue());
+            OPApplication.getContext().sendBroadcast(intent);
+        }).enqueue();
+    }
+    public void getTimer2(){
+        readCharacteristic(openPotTimer2).with((device, data) -> {
+            Intent intent = new Intent("company.lizard.openpot.TIMER1");
+            intent.putExtra("VALUE", data.getValue());
+            OPApplication.getContext().sendBroadcast(intent);
+        }).enqueue();
+    }
+    public void setTimer1(int timer){
+        byte[] timerBytes = new byte[2];
+        timerBytes[0] = (byte)(timer / 60);
+        timerBytes[1] = (byte)(timer % 60);
+        writeCharacteristic(openPotTimer1, timerBytes, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+    }
+    public void setTimer2(int timer){
+        byte[] timerBytes = new byte[2];
+        timerBytes[0] = (byte)(timer / 60);
+        timerBytes[1] = (byte)(timer % 60);
+        writeCharacteristic(openPotTimer2, timerBytes, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+    }
+
+    public void getTime(){
+        readCharacteristic(openPotClock).with((device, data) -> {
+            Intent intent = new Intent("company.lizard.openpot.CLOCK");
+            intent.putExtra("VALUE", data.getValue());
+            OPApplication.getContext().sendBroadcast(intent);
+        }).enqueue();
+    }
+
 
     public void calCheckCode(byte[] bytes) {
         byte checksum = 0;
@@ -287,12 +327,17 @@ public class BLEService extends BleManager implements ConnectionObserver {
     protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt){
         BluetoothGattService openPotService = gatt.getService(OPENPOT_SERVICE_UUID);
         BluetoothGattService openPotTimeService = gatt.getService(OPENPOT_TIME_SERVICE_UUID);
-        if(openPotService != null){
+        if(openPotService != null && openPotTimeService != null){
             openPotControlPoint = openPotService.getCharacteristic(OPENPOT_CHAR_UUID);
             openPotTelemetry = openPotService.getCharacteristic(OPENPOT_NOTIFY_UUID);
             openPot24hrBit = openPotTimeService.getCharacteristic(OPENPOT_24HR_UUID);
             openPotClock = openPotTimeService.getCharacteristic(OPENPOT_CLOCK_UUID);
+            openPotTimer1 = openPotTimeService.getCharacteristic(OPENPOT_TIMER1_UUID);
+            openPotTimer2 = openPotTimeService.getCharacteristic(OPENPOT_TIMER2_UUID);
             return true;
+        }
+        if(openPotTimeService == null){
+            Log.d(TAG, "char error");
         }
         return false;
     }
