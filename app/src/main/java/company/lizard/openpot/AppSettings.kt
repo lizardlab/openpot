@@ -23,6 +23,7 @@ class AppSettings : AppCompatActivity() {
     //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPref =  getSharedPreferences("OPENPOT_PREFS",Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
         val isCelsius = sharedPref.getBoolean("IS_CELSIUS", true)
         super.onCreate(savedInstanceState)
         bleService = BLEService.getInstance(applicationContext)
@@ -47,6 +48,8 @@ class AppSettings : AppCompatActivity() {
                 val mins = hr * 60 + min
                 Log.d("ST", mins.toString())
                 bleService.setTimer1(mins)
+                editor.putInt("TIMER1", mins)
+                editor.commit()
             }
         }
         val txtTimer2 = findViewById<EditText>(R.id.txtTimer2)
@@ -57,6 +60,8 @@ class AppSettings : AppCompatActivity() {
                 val mins = hr * 60 + min
                 Log.d("ST", mins.toString())
                 bleService.setTimer2(mins)
+                editor.putInt("TIMER2", mins)
+                editor.commit()
             }
         }
     }
@@ -97,6 +102,8 @@ class AppSettings : AppCompatActivity() {
     }
     var dataReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            val sharedPref =  getSharedPreferences("OPENPOT_PREFS",Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
             if (intent.action == "company.lizard.openpot.TWENTY_FOUR") {
                 val data = intent.getByteArrayExtra("VALUE")
                 val btn = findViewById<SwitchCompat>(R.id.btnMilTime)
@@ -105,15 +112,18 @@ class AppSettings : AppCompatActivity() {
             else if(intent.action == "company.lizard.openpot.TIMER1"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer1)
+                editor.putInt("TIMER1", data!![0] * 60 + data!![1] % 60);
                 val timerStr: String = data!![0].toString() + ":" + data!![1].toString()
                 timer.setText(timerStr)
             }
             else if(intent.action == "company.lizard.openpot.TIMER2"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer2)
+                editor.putInt("TIMER2", data!![0] * 60 + data!![1] % 60)
                 val timerStr: String = data!![0].toString() + ":" + data!![1].toString()
                 timer.setText(timerStr)
             }
+            editor.commit()
         }
     }
 }
