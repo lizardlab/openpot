@@ -52,12 +52,13 @@ public class BLEService extends BleManager implements ConnectionObserver {
     final String TAG = BLEService.class.getSimpleName();
     final private UUID OPENPOT_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_CHAR_UUID = UUID.fromString("0000dab1-0000-1000-8000-00805F9B34FB");
-    final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000daa0-0000-1000-8000-00805F9B34FB");
-    private final UUID OPENPOT_24HR_UUID = UUID.fromString("0000daa4-0000-1000-8000-00805F9B34FB");
-    private final UUID OPENPOT_CLOCK_UUID = UUID.fromString("0000daa1-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_NOTIFY_UUID = UUID.fromString("0000dab2-0000-1000-8000-00805F9B34FB");
+
+    final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000daa0-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_CLOCK_UUID = UUID.fromString("0000daa1-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_TIMER1_UUID = UUID.fromString("0000daa2-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_TIMER2_UUID = UUID.fromString("0000daa3-0000-1000-8000-00805F9B34FB");
+    private final UUID OPENPOT_24HR_UUID = UUID.fromString("0000daa4-0000-1000-8000-00805F9B34FB");
     private BluetoothGattCharacteristic openPotControlPoint;
     private BluetoothGattCharacteristic openPot24hrBit;
     private BluetoothGattCharacteristic openPotClock;
@@ -238,13 +239,17 @@ public class BLEService extends BleManager implements ConnectionObserver {
         ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt(secondsSinceCustomEpoch);
-        writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).enqueue();
+        writeCharacteristic(openPotClock, buffer.array(), BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).fail((@NonNull()BluetoothDevice device, int status) ->{
+            Log.d(TAG, "Sync time failed " + status);
+        }).enqueue();
+
     }
     public void is24Hr(){
         readCharacteristic(openPot24hrBit).with((device, data) -> {
             Intent intent = new Intent("company.lizard.openpot.TWENTY_FOUR");
             intent.putExtra("VALUE", data.getValue());
             OPApplication.getContext().sendBroadcast(intent);
+            Log.d(TAG, "Read 24 hr");
         }).fail((@NonNull() BluetoothDevice device, int status) -> {
             Log.d(TAG, "24 hr read failed " + status);
         }).enqueue();
@@ -252,20 +257,26 @@ public class BLEService extends BleManager implements ConnectionObserver {
     public void set24Hr(boolean is24Hr){
         byte[] milTime = new byte[1];
         milTime[0] = (byte)(is24Hr ? 0 : 1);
-        writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+        writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).fail((@NonNull()BluetoothDevice device, int status) ->{
+            Log.d(TAG, "24 hr write failed " + status);
+        }).enqueue();
     }
     public void getTimer1(){
-        readCharacteristic(openPotTimer2).with((device, data) -> {
+        readCharacteristic(openPotTimer1).with((device, data) -> {
             Intent intent = new Intent("company.lizard.openpot.TIMER1");
             intent.putExtra("VALUE", data.getValue());
             OPApplication.getContext().sendBroadcast(intent);
+        }).fail((@NonNull() BluetoothDevice device, int status) -> {
+            Log.d(TAG, "Timer 1 read failed " + status);
         }).enqueue();
     }
     public void getTimer2(){
         readCharacteristic(openPotTimer2).with((device, data) -> {
-            Intent intent = new Intent("company.lizard.openpot.TIMER1");
+            Intent intent = new Intent("company.lizard.openpot.TIMER2");
             intent.putExtra("VALUE", data.getValue());
             OPApplication.getContext().sendBroadcast(intent);
+        }).fail((@NonNull() BluetoothDevice device, int status) -> {
+            Log.d(TAG, "Timer 2 read failed " + status);
         }).enqueue();
     }
     public void setTimer1(int timer){
@@ -335,9 +346,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
             openPotTimer1 = openPotTimeService.getCharacteristic(OPENPOT_TIMER1_UUID);
             openPotTimer2 = openPotTimeService.getCharacteristic(OPENPOT_TIMER2_UUID);
             return true;
-        }
-        if(openPotTimeService == null){
-            Log.d(TAG, "char error");
         }
         return false;
     }
