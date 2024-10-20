@@ -152,9 +152,8 @@ public class BLEService extends BleManager implements ConnectionObserver {
             manual[8] = (byte) (delay % 60);
         }
         calCheckCode(manual);
-        writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).with((@NonNull() BluetoothDevice device, @NonNull() Data data) -> { Log.d(TAG,toHex(ByteBuffer.wrap(data.getValue())));})
+        writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
-        Log.i(TAG, "Manual");
     }
     // Duration 0 - 99h59m
     // Mode L/N/M
@@ -199,7 +198,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
         calCheckCode(yog);
         writeCharacteristic(openPotControlPoint, yog, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
-        Log.i(TAG, "Yogurt");
         Log.i(TAG, toHex(ByteBuffer.wrap(yog)));
     }
     public void rice(Pressure pressure, Timer timer, int delay){
@@ -312,8 +310,6 @@ public class BLEService extends BleManager implements ConnectionObserver {
         calCheckCode(cancel);
         writeCharacteristic(openPotControlPoint, cancel, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
                 .enqueue();
-        Log.i(TAG, "Cancel");
-
     }
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();

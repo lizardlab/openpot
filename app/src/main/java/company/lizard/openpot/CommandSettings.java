@@ -81,9 +81,9 @@ public class CommandSettings extends AppCompatActivity {
         findViewById(R.id.btnDelayStart).setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(this, v);
             int timer1Val = sharedPref.getInt("TIMER1", 17);
-            String timer1Str = timer1Val / 60 + ":" + timer1Val % 60;
+            String timer1Str = timer1Val / 60 + ":" + String.format("%02d", timer1Val % 60);
             int timer2Val = sharedPref.getInt("TIMER2", 90);
-            String timer2Str = timer2Val / 60 + ":" + timer2Val % 60;
+            String timer2Str = timer2Val / 60 + ":" + String.format("%02d", timer2Val % 60);
             popup.getMenu().add(0, R.id.timer1, 0, getText(R.string.timer1) + " (" + timer1Str + ")");
             popup.getMenu().add(0, R.id.timer1, 1, getText(R.string.timer2) + " (" + timer2Str + ")");
             //popup.getMenuInflater().inflate(R.menu.timer_menu, popup.getMenu());
