@@ -152,7 +152,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
             manual[8] = (byte) (delay % 60);
         }
         calCheckCode(manual);
-        writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
+        writeCharacteristic(openPotControlPoint, manual, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).with((@NonNull() BluetoothDevice device, @NonNull() Data data) -> { Log.d(TAG,toHex(ByteBuffer.wrap(data.getValue())));})
                 .enqueue();
         Log.i(TAG, "Manual");
     }
@@ -218,8 +218,7 @@ public class BLEService extends BleManager implements ConnectionObserver {
             rice[8] = (byte) (delay % 60);
         }
         calCheckCode(rice);
-        writeCharacteristic(openPotControlPoint, rice, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE)
-                .enqueue();
+        writeCharacteristic(openPotControlPoint, rice, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
     }
     public void setTime(){
         // Define the custom epoch start date and time

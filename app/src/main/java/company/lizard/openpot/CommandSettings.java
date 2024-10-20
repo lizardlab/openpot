@@ -1,11 +1,14 @@
 package company.lizard.openpot;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -74,8 +77,35 @@ public class CommandSettings extends AppCompatActivity {
                 mode.setVisibility(View.VISIBLE);
             }
         }
+        SharedPreferences sharedPref = getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+        findViewById(R.id.btnDelayStart).setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(this, v);
+            int timer1Val = sharedPref.getInt("TIMER1", 17);
+            String timer1Str = timer1Val / 60 + ":" + timer1Val % 60;
+            int timer2Val = sharedPref.getInt("TIMER2", 90);
+            String timer2Str = timer2Val / 60 + ":" + timer2Val % 60;
+            popup.getMenu().add(0, R.id.timer1, 0, getText(R.string.timer1) + " (" + timer1Str + ")");
+            popup.getMenu().add(0, R.id.timer1, 1, getText(R.string.timer2) + " (" + timer2Str + ")");
+            //popup.getMenuInflater().inflate(R.menu.timer_menu, popup.getMenu());
+            popup.show();
+            popup.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.timer1) {
+                    start(Timer.TIMER1);
+                    return true;
+                } else if (itemId == R.id.timer2) {
+                    start(Timer.TIMER2);
+                    return true;
+                }
+                return false;
+            });
+        });
     }
-    public void start(View view){
+
+    public void startBtn(View view){
+        start(Timer.NONE);
+    }
+    public void start(Timer timer){
         RadioGroup pressureBlk = findViewById(R.id.pressureBlock);
         EditText durationAmt = findViewById(R.id.txtDurationTime);
         int durationInt = Integer.parseInt(durationAmt.getText().toString());
@@ -107,14 +137,22 @@ public class CommandSettings extends AppCompatActivity {
         cmdSet.put("porridge", CommandType.PORRIDGE);
         cmdSet.put("steam", CommandType.STEAM);
         cmdSet.put("multigrain", CommandType.MULTIGRAIN);
+        int delay = 0;
+        SharedPreferences sharedPref = getSharedPreferences("OPENPOT_PREFS",MODE_PRIVATE);
+        if(timer == Timer.TIMER1){
+            delay = sharedPref.getInt("TIMER1", 17); // this was what I remembered the default was?
+        }
+        else if(timer == Timer.TIMER2){
+            delay = sharedPref.getInt("TIMER2", 90);
+        }
         if(cmd.equalsIgnoreCase("manual")){
-            bleService.manual(durationInt, pressure, Timer.NONE, 0);
+            bleService.manual(durationInt, pressure, timer, delay);
         }
         else if(cmd.equalsIgnoreCase("rice")){
-            bleService.rice(pressure, Timer.NONE, 0);
+            bleService.rice(pressure, timer, delay);
         }
         else if(cmd.equalsIgnoreCase("keep warm")){
-            bleService.keepWarm(durationInt, mode, Timer.NONE, 0);
+            bleService.keepWarm(durationInt, mode, timer, delay);
         }
         else if(cmd.equalsIgnoreCase("yogurt")){
             RadioGroup yogurtBlk = findViewById(R.id.yogurtBlock);
@@ -132,8 +170,8 @@ public class CommandSettings extends AppCompatActivity {
             bleService.yogurt(yogurt, durationInt);
         }
         else{
-            bleService.durationPressureMode(durationInt, pressure, Timer.NONE, 0, mode, cmdSet.get(cmd.toLowerCase(Locale.ENGLISH)));
+            bleService.durationPressureMode(durationInt, pressure, timer, delay, mode, cmdSet.get(cmd.toLowerCase(Locale.ENGLISH)));
         }
-
     }
+
 }

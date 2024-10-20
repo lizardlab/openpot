@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CFCFCF"
     android:orientation="vertical">
 
     <TextView
@@ -185,10 +184,10 @@
         android:id="@+id/btnStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:onClick="start"
+        android:backgroundTint="@color/primary_dark"
+        android:onClick="startBtn"
         android:text="@string/start"
-        android:textColor="#003549"
+        android:textColor="@color/white"
         app:cornerRadius="5dp" />
 
     <Space
@@ -200,9 +199,9 @@
             android:id="@+id/btnDelayStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="@color/primary_dark"
             android:text="@string/delay_start"
-            android:textColor="#003549"
+            android:textColor="@color/white"
             app:cornerRadius="5dp" />
 
     <Space

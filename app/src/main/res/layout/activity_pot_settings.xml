@@ -4,27 +4,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:layout_width="409dp"
-    android:layout_height="729dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:onClick="toggleSI"
     android:orientation="vertical"
-    android:paddingHorizontal="30dp"
-    tools:context=".AppSettings"
-    tools:layout_editor_absoluteX="1dp"
-    tools:layout_editor_absoluteY="1dp">
+    tools:context=".AppSettings">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="toggleSI"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        >
 
         <TextView
             android:id="@+id/lblTempUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
             android:text="@string/temperature_unit" />
 
         <Space
@@ -50,13 +48,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/lblElevAdjust"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:text="@string/elevation_adjust" />
 
         <Space
@@ -76,13 +74,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/lblNotif"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:text="@string/notification" />
 
         <Space
@@ -103,14 +101,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="syncTime"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/lblSync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
             android:text="@string/sync_time" />
 
     </LinearLayout>
@@ -118,13 +116,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/milTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:text="@string/mil_time" />
 
         <Space
@@ -143,14 +141,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/lblTimer1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
             android:text="@string/timer1" />
 
         <Space
@@ -173,14 +171,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
 
         <TextView
             android:id="@+id/lblTimer2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:layout_marginLeft="10dp"
             android:text="@string/timer2" />
 
         <Space
