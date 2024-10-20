@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -253,18 +254,24 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     double heatingLvl = (int)data[13] / 16.0 * 100.0;
-                    String heatingTxt = heatingLvl + "%";
+                    String heatingTxt = Math.round(heatingLvl) + "%";
                     byte[] adData = new byte[4];
                     adData[0] = data[12];
                     int adVal = bytesToInt(adData);
                     int temp = Integer.parseInt(TemperatureHelper.fromADToC(String.valueOf(adVal)));
-                    temperature.setText(String.format(Locale.US,"%d",temp));
+                    SharedPreferences sharedPreferences = getSharedPreferences("OPENPOT_PREFS",MODE_PRIVATE);
+                    boolean isCelsius = sharedPreferences.getBoolean("IS_CELSIUS", true);
+                    if(!isCelsius){
+                        temp = (int)Math.round(temp * 1.8 + 32);
+                    }
+                    String unit = isCelsius ? "C": "F";
+                    temperature.setText(String.format(Locale.US,"%dº" + unit,temp));
                     heatingLevel.setText(heatingTxt);
                     int mins = data[10];
                     int hrs = data[9];
                     String timeRemain;
                     if(hrs == 0){
-                        timeRemain = String.valueOf(mins);
+                        timeRemain = String.valueOf(mins) + 'm';
                     }
                     else{
                         timeRemain = hrs  + ":" + mins;
