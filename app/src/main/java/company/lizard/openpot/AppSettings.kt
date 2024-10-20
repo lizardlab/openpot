@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -46,7 +45,6 @@ class AppSettings : AppCompatActivity() {
                 val hr = text!!.split(":")[0].toInt()
                 val min = text!!.split(":")[1].toInt()
                 val mins = hr * 60 + min
-                Log.d("ST", mins.toString())
                 bleService.setTimer1(mins)
                 editor.putInt("TIMER1", mins)
                 editor.commit()
@@ -58,7 +56,6 @@ class AppSettings : AppCompatActivity() {
                 val hr = text!!.split(":")[0].toInt()
                 val min = text!!.split(":")[1].toInt()
                 val mins = hr * 60 + min
-                Log.d("ST", mins.toString())
                 bleService.setTimer2(mins)
                 editor.putInt("TIMER2", mins)
                 editor.commit()
@@ -112,15 +109,15 @@ class AppSettings : AppCompatActivity() {
             else if(intent.action == "company.lizard.openpot.TIMER1"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer1)
-                editor.putInt("TIMER1", data!![0] * 60 + data!![1] % 60);
-                val timerStr: String = data!![0].toString() + ":" + data!![1].toString()
+                editor.putInt("TIMER1", data!![0] * 60 + data!![1] % 60)
+                val timerStr: String = data!![0].toString() + ":" + String.format("%02d", data[1] % 60)
                 timer.setText(timerStr)
             }
             else if(intent.action == "company.lizard.openpot.TIMER2"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer2)
                 editor.putInt("TIMER2", data!![0] * 60 + data!![1] % 60)
-                val timerStr: String = data!![0].toString() + ":" + data!![1].toString()
+                val timerStr: String = data!![0].toString() + ":" + String.format("%02d", data[1] % 60)
                 timer.setText(timerStr)
             }
             editor.commit()
