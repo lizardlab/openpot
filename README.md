@@ -34,8 +34,8 @@ To make this as "future proof" as possible the reverse engineered protocol is de
 | CK       | Cook Mode           | 1 byte (see table)                                                                                 |
 | TS       | Timer Selection     | No timer - 0x20, Timer 1 - 0x11, Timer 2 - 0x12                                                    |
 | MD       | Mode                | Normal - 0xf0, Less - 0xb0, More - 0x70. (Yogurt) Pasteurize - 0xc0, Yogurt - 0x40, Ferment - 0x80 |
-| TA       | Timer Amount        | 4 bytes HH:MM in BCD, 0x0000 for no timer (yogurt/saute have no delay)                             |
-| DR       | Duration Amount     | 4 bytes HH:MM in BCD                                                                               |
+| TA       | Timer Amount        | 2 bytes H:M in BCD, 0x0000 for no timer (yogurt/saute have no delay)                               |
+| DR       | Duration Amount     | 2 bytes H:M in BCD                                                                                 |
 | CK       | Check Code          | Add previous bytes together XOR with 255 + 1                                                       |
 
 #### Cook Mode
@@ -64,7 +64,7 @@ This packet needs to be written (with no response aka "command mode") to 0xdab1.
 |----------|---------------------|----------------------------------------------|
 | PREAMBLE | Fixed start message | `aa554002`                                   |
 | WM       | Work Mode           | 1 byte (see table)                           |
-| RT       | Remaining Time      | 4 bytes HH:MM in BCD                         |
+| RT       | Remaining Time      | 2 bytes H:M in BCD                           |
 | TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))                     |
 | HL       | Heating Level       | 1 Byte % formula: value / 16 * 100           |
 | CK       | Check Code          | Add previous bytes together XOR with 255 + 1 |
@@ -82,7 +82,7 @@ The time is a 32 bit (big endian) timestamp with a custom epoch of 2001-01-01T00
 
 The 24 hr is a simple 1 bit value. It is 1 if it is 24 hour time, 0 if it is 12 hour time. Write/Read this value to 0xdaa4
 
-Timers are similarly HH:MM in BCD format. They are also supplied in the command packet. Timer 1 is 0xdaa2 and Timer 2 is 0xdaa3 and both can be written and read.
+Timers are similarly H:M in BCD format. They are also supplied in the command packet. Timer 1 is 0xdaa2 and Timer 2 is 0xdaa3 and both can be written and read.
 
 ## Recipe Mode
 ```
