@@ -1,5 +1,6 @@
 package company.lizard.openpot
 
+import android.app.TimePickerDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
+import java.util.Locale
 
 
 class AppSettings : AppCompatActivity() {
@@ -22,7 +24,6 @@ class AppSettings : AppCompatActivity() {
     //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPref =  getSharedPreferences("OPENPOT_PREFS",Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
         val isCelsius = sharedPref.getBoolean("IS_CELSIUS", true)
         super.onCreate(savedInstanceState)
         bleService = BLEService.getInstance(applicationContext)
@@ -46,8 +47,6 @@ class AppSettings : AppCompatActivity() {
                 val min = text!!.split(":")[1].toInt()
                 val mins = hr * 60 + min
                 bleService.setTimer1(mins)
-                editor.putInt("TIMER1", mins)
-                editor.commit()
             }
         }
         val txtTimer2 = findViewById<EditText>(R.id.txtTimer2)
@@ -57,8 +56,6 @@ class AppSettings : AppCompatActivity() {
                 val min = text!!.split(":")[1].toInt()
                 val mins = hr * 60 + min
                 bleService.setTimer2(mins)
-                editor.putInt("TIMER2", mins)
-                editor.commit()
             }
         }
     }
@@ -89,6 +86,7 @@ class AppSettings : AppCompatActivity() {
         }
         editor.commit()
     }
+
     fun syncTime(v: View?){
         bleService.setTime()
     }
@@ -96,6 +94,32 @@ class AppSettings : AppCompatActivity() {
         bleService.is24Hr()
         bleService.getTimer1()
         bleService.getTimer2()
+    }
+    fun timer1(v: View?){
+        val txt = v as TextView
+        val sharedPref = getSharedPreferences("OPENPOT_PREFS", Context.MODE_PRIVATE)
+        val timer = sharedPref.getInt("TIMER1", 0)
+        val hour = timer / 60
+        val minutes = timer % 60
+        val is24 = sharedPref.getBoolean("24", false)
+        val picker = TimePickerDialog(
+            this,
+            { _, sHour, sMinute -> txt.text = "$sHour" + ":" +  String.format(Locale.US,"%02d", sMinute) }, hour, minutes, is24
+        )
+        picker.show()
+    }
+    fun timer2(v: View?){
+        val txt = v as TextView
+        val sharedPref = getSharedPreferences("OPENPOT_PREFS", Context.MODE_PRIVATE)
+        val timer = sharedPref.getInt("TIMER2", 0)
+        val hour = timer / 60
+        val minutes = timer % 60
+        val is24 = sharedPref.getBoolean("24", false)
+        val picker = TimePickerDialog(
+            this,
+            { _, sHour, sMinute -> txt.text = "$sHour" + ":" + String.format(Locale.US,"%02d", sMinute) }, hour, minutes, is24
+        )
+        picker.show()
     }
     var dataReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -105,22 +129,23 @@ class AppSettings : AppCompatActivity() {
                 val data = intent.getByteArrayExtra("VALUE")
                 val btn = findViewById<SwitchCompat>(R.id.btnMilTime)
                 btn.isChecked = data!![0].toInt() == 0
+                editor.putBoolean("24", data!![0].toInt() == 0)
             }
             else if(intent.action == "company.lizard.openpot.TIMER1"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer1)
                 editor.putInt("TIMER1", data!![0] * 60 + data!![1] % 60)
-                val timerStr: String = data!![0].toString() + ":" + String.format("%02d", data[1] % 60)
+                val timerStr: String = data!![0].toString() + ":" + String.format(Locale.US, "%02d", data[1] % 60)
                 timer.setText(timerStr)
             }
             else if(intent.action == "company.lizard.openpot.TIMER2"){
                 val data = intent.getByteArrayExtra("VALUE")
                 val timer = findViewById<EditText>(R.id.txtTimer2)
                 editor.putInt("TIMER2", data!![0] * 60 + data!![1] % 60)
-                val timerStr: String = data!![0].toString() + ":" + String.format("%02d", data[1] % 60)
+                val timerStr: String = data!![0].toString() + ":" + String.format(Locale.US,"%02d", data[1] % 60)
                 timer.setText(timerStr)
             }
-            editor.commit()
+            editor.apply()
         }
     }
 }

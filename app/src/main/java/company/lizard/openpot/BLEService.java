@@ -1,4 +1,6 @@
 package company.lizard.openpot;
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -6,6 +8,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -218,6 +221,27 @@ public class BLEService extends BleManager implements ConnectionObserver {
         calCheckCode(rice);
         writeCharacteristic(openPotControlPoint, rice, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
     }
+    public void saute(Mode mode, Timer timer, int delay){
+        byte[] saute = hexStringToByteArray("aa555a010b20400000001e0000000000000000");
+        if(Mode.LESS == mode){
+            saute[6] = (byte)0xc0;
+        }
+        else if(Mode.MORE == mode){
+            saute[6] = (byte)0x80;
+        }
+        if(timer == Timer.TIMER1){
+            saute[5] = 0x11;
+            saute[7] = (byte) (delay / 60);
+            saute[8] = (byte) (delay % 60);
+        }
+        else if(timer == Timer.TIMER2){
+            saute[5] = 0x12;
+            saute[7] = (byte) (delay / 60);
+            saute[8] = (byte) (delay % 60);
+        }
+        calCheckCode(saute);
+        writeCharacteristic(openPotControlPoint, saute, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+    }
     public void setTime(){
         // Define the custom epoch start date and time
         LocalDateTime customEpoch = LocalDateTime.of(2001, 1, 1, 0, 0, 0);
@@ -246,7 +270,10 @@ public class BLEService extends BleManager implements ConnectionObserver {
             Intent intent = new Intent("company.lizard.openpot.TWENTY_FOUR");
             intent.putExtra("VALUE", data.getValue());
             OPApplication.getContext().sendBroadcast(intent);
-            Log.d(TAG, "Read 24 hr");
+            SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("24", data.getValue()[0] == 1);
+            editor.apply();
         }).fail((@NonNull() BluetoothDevice device, int status) -> {
             Log.d(TAG, "24 hr read failed " + status);
         }).enqueue();
@@ -257,11 +284,22 @@ public class BLEService extends BleManager implements ConnectionObserver {
         writeCharacteristic(openPot24hrBit, milTime, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).fail((@NonNull()BluetoothDevice device, int status) ->{
             Log.d(TAG, "24 hr write failed " + status);
         }).enqueue();
+        SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("24", is24Hr);
+        editor.apply();
     }
     public void getTimer1(){
         readCharacteristic(openPotTimer1).with((device, data) -> {
             Intent intent = new Intent("company.lizard.openpot.TIMER1");
-            intent.putExtra("VALUE", data.getValue());
+            byte[] dater = data.getValue();
+            intent.putExtra("VALUE", dater);
+            SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            int timer = dater[0] * 60 + dater[1] % 60;
+            editor.putInt("TIMER1", timer);
+            editor.apply();
             OPApplication.getContext().sendBroadcast(intent);
         }).fail((@NonNull() BluetoothDevice device, int status) -> {
             Log.d(TAG, "Timer 1 read failed " + status);
@@ -270,23 +308,38 @@ public class BLEService extends BleManager implements ConnectionObserver {
     public void getTimer2(){
         readCharacteristic(openPotTimer2).with((device, data) -> {
             Intent intent = new Intent("company.lizard.openpot.TIMER2");
-            intent.putExtra("VALUE", data.getValue());
+            byte[] dater = data.getValue();
+            intent.putExtra("VALUE", dater);
+            SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            int timer = dater[0] * 60 + dater[1] % 60;
+            editor.putInt("TIMER2", timer);
+            editor.apply();
             OPApplication.getContext().sendBroadcast(intent);
         }).fail((@NonNull() BluetoothDevice device, int status) -> {
             Log.d(TAG, "Timer 2 read failed " + status);
         }).enqueue();
+
     }
     public void setTimer1(int timer){
         byte[] timerBytes = new byte[2];
         timerBytes[0] = (byte)(timer / 60);
         timerBytes[1] = (byte)(timer % 60);
         writeCharacteristic(openPotTimer1, timerBytes, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+        SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("TIMER1", timer);
+        editor.apply();
     }
     public void setTimer2(int timer){
         byte[] timerBytes = new byte[2];
         timerBytes[0] = (byte)(timer / 60);
         timerBytes[1] = (byte)(timer % 60);
         writeCharacteristic(openPotTimer2, timerBytes, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE).enqueue();
+        SharedPreferences sharedPref =  getContext().getSharedPreferences("OPENPOT_PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("TIMER2", timer);
+        editor.apply();
     }
 
     public void getTime(){
@@ -367,6 +420,15 @@ public class BLEService extends BleManager implements ConnectionObserver {
     public void onDeviceReady(@NonNull final BluetoothDevice device){
         setNotificationCallback(openPotTelemetry).with(this::onDataReceived);
         enableNotifications(openPotTelemetry).enqueue();
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("OPENPOT_PREFS",MODE_PRIVATE);
+        int timer1 = sharedPreferences.getInt("TIMER1", -1);
+        if(timer1 == -1){
+            getTimer1();
+        }
+        int timer2 = sharedPreferences.getInt("TIMER2", -1);
+        if(timer2 == -1){
+            getTimer1();
+        }
         Log.i(TAG, "Device Ready");
     }
     @SuppressLint("MissingPermission")
