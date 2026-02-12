@@ -51,6 +51,7 @@ android {
 
 dependencies {
     implementation("androidx.preference:preference:1.2.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.04.01"))
     val core_version = "1.13.1"
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")

@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
@@ -51,17 +52,20 @@ enum CommandType{
     PORRIDGE,
     MULTIGRAIN
 }
+
 public class BLEService extends BleManager implements ConnectionObserver {
     final String TAG = BLEService.class.getSimpleName();
     final private UUID OPENPOT_SERVICE_UUID = UUID.fromString("0000dab0-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_CHAR_UUID = UUID.fromString("0000dab1-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_NOTIFY_UUID = UUID.fromString("0000dab2-0000-1000-8000-00805F9B34FB");
+    final private UUID OPENPOT_RECIPE_UUID = UUID.fromString("0000dac1-0000-1000-8000-00805F9B34FB");
 
     final private UUID OPENPOT_TIME_SERVICE_UUID = UUID.fromString("0000daa0-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_CLOCK_UUID = UUID.fromString("0000daa1-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_TIMER1_UUID = UUID.fromString("0000daa2-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_TIMER2_UUID = UUID.fromString("0000daa3-0000-1000-8000-00805F9B34FB");
     private final UUID OPENPOT_24HR_UUID = UUID.fromString("0000daa4-0000-1000-8000-00805F9B34FB");
+    final private UUID OPENPOT_RECIPE_SERVICE_UUID = UUID.fromString("0000dac0-0000-1000-8000-00805F9B34FB");
     private BluetoothGattCharacteristic openPotControlPoint;
     private BluetoothGattCharacteristic openPot24hrBit;
     private BluetoothGattCharacteristic openPotClock;
@@ -350,7 +354,11 @@ public class BLEService extends BleManager implements ConnectionObserver {
         }).enqueue();
     }
 
+    public void recipeMode(List<Recipe> recipeList){
+        for(Recipe recipe : recipeList){
 
+        }
+    }
     public void calCheckCode(byte[] bytes) {
         byte checksum = 0;
         for (int i = 0; i < bytes.length - 1; i++) {

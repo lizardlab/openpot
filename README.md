@@ -19,6 +19,9 @@ To make this as "future proof" as possible the reverse engineered protocol is de
 | Timer 1 Characteristic       | 0xdaa2 | Read/Write |
 | Timer 2 Characteristic       | 0xdaa3 | Read/Write |
 | 24 hour clock Characteristic | 0xdaa4 | Read/Write |
+| Recipe Service               | 0xdac0 | Service    |
+| Recipe Characteristic        | 0xdac1 | Write      |
+
 
 ### Command Packet
 ```
@@ -62,6 +65,7 @@ This packet needs to be written (with no response aka "command mode") to 0xdab1.
 | PREAMBLE | Fixed start message | `aa554002`                                   |
 | WM       | Work Mode           | 1 byte (see table)                           |
 | RT       | Remaining Time      | 4 bytes HH:MM in BCD                         |
+| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))                     |
 | HL       | Heating Level       | 1 Byte % formula: value / 16 * 100           |
 | CK       | Check Code          | Add previous bytes together XOR with 255 + 1 |
 
@@ -79,6 +83,60 @@ The time is a 32 bit (big endian) timestamp with a custom epoch of 2001-01-01T00
 The 24 hr is a simple 1 bit value. It is 1 if it is 24 hour time, 0 if it is 12 hour time. Write/Read this value to 0xdaa4
 
 Timers are similarly HH:MM in BCD format. They are also supplied in the command packet. Timer 1 is 0xdaa2 and Timer 2 is 0xdaa3 and both can be written and read.
+
+## Recipe Mode
+```
+| Byte | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
+|      |     PREAMBLE      | UNK     |        UNK   | HR | MM |    | TP | HL | SD |    | ES | PS | CT | CK |
+```
+| Name     | Description         | Format                                         |
+|----------|---------------------|------------------------------------------------|
+| PREAMBLE | Fixed start message | `aa555a01`                                     |
+| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))(0x08 if N/A)        |
+| HR       | Hour Amount         | Only used for Pause & Temp Hold                |
+| MM       | Minute Duration     | Gives duration of minutes*                     |
+| HL       | Heating Level       | 25% (0x04) 50% (0x08) 75% (0x0c) 100% (0x10)   |
+| SD       | Status Display      | LED (bits 0-2), LCD Message(bits 3-7)          |
+| ES       | Sound Selection     | Duration (bits 0-2), Music (bits 3-5)          |
+| PS       | Priority Selection  | Time (0x00) Pressure (0x20) Temperature (0x20) |
+| CT       | Counter             | Counts from 0x60 up to end of recipe           |
+| CK       | Check Code          | Add previous bytes together XOR with 255 + 1   |
+
+### LED Modes
+| Mode       | Value |
+|------------|-------|
+| None       | `000` |
+| Manual     | `001` |
+| Keep Warm  | `010` |
+
+### LCD Messages
+| Mode         | Value   |
+|--------------|---------|
+| None         | `00000` |
+| donE         | `00001` |
+| add          | `00010` |
+| yogt         | `00011` |
+| food         | `00100` |
+| hot          | `00101` |
+| on           | `00111` |
+| off          | `01000` |
+| *Count Up*   | `01001` |
+| *Count Down* | `01011` |
+
+### Sound Modes
+Beep
+| Mode           | Value  |
+|----------------|--------|
+| None           | `000`  |
+| Short Beep     | `001`  |
+| Long Beep      | `010`  |
+| Short beep 15s | `011`  |
+Music
+| Mode           | Value  |
+|----------------|--------|
+| None           | `000`  |
+| "Music1"       | `001`  |
+*Duration for all modes is defined by the minutes (max 120 for holding pressure, 30 for heating for period). Hours are used in Pause and Hold the temperature mode, so then the minutes field does not go over 60 in that case, but will for cases where the hours field isn't used.
 
 ## Dedication
 This app is dedicated to [Lizard Company](https://lizard.company) it was a company that I founded 20 years ago on this day. Lizard Company specializes in creating end-to-end technology solutions for our clients. Happy 20th birthday Lizard Company!

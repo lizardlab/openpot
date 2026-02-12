@@ -52,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // requests for bluetooth to be turned on
         if (btAdapter == null || !btAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, 1);
+            startActivity(enableIntent);
         }
         AtomicBoolean haveLocationPerms = new AtomicBoolean(false);
         ActivityResultLauncher<String[]> locationPermissionRequest =
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         if (btAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
         }
+        connectDevice();
     }
     @Override
     protected void onResume(){
@@ -125,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(dataReceiver);
     }
     public void connectToDevice(View view){
+        connectDevice();
+    }
+    public void connectDevice(){
         bluetoothLeScanner = btAdapter.getBluetoothLeScanner();
         scanLeDevice();
     }
@@ -141,7 +146,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         //bleService.is24Hr();
     }
-    public void cancel(View view){ bleService.cancel(); }
+    public void cancel(View view){
+        if(bleService.isReady() && bleService.isConnected()){
+            bleService.cancel();
+        }
+
+    }
     @SuppressLint("MissingPermission")
     private void scanLeDevice() {
         if (!scanning) {
