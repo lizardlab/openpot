@@ -1,5 +1,5 @@
 # Instant Pot Temperature
-The temperature reading of the Instant Pot is a Look Up Table that is represented as a huge hashmap inside of the app. This is most likely a thermocouple that was calibrated after much testing to match known temperature values to whatever reading the sensor has. So in order to understand temperature you need to first convert the AD temperature to Celscius and then you can apply whatever math to get it to the measurement system of choice.
+The temperature reading of the Instant Pot is a Look Up Table that is represented as a huge hashmap inside of the app. This is most likely a thermocouple that was calibrated after much testing to match known temperature values to whatever reading the sensor has. So in order to understand temperature you need to first convert the AD temperature to Celsius and then you can apply whatever math to get it to the measurement system of choice.
 ## AD to Celsius
 | AD | Celsius |
 |----|---------|

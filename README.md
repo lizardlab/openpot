@@ -125,17 +125,21 @@ Timers are similarly H:M in BCD format. They are also supplied in the command pa
 
 ### Sound Modes
 Beep
+
 | Mode           | Value  |
 |----------------|--------|
 | None           | `000`  |
 | Short Beep     | `001`  |
 | Long Beep      | `010`  |
 | Short beep 15s | `011`  |
+
 Music
+
 | Mode           | Value  |
 |----------------|--------|
 | None           | `000`  |
 | "Music1"       | `001`  |
+
 *Duration for all modes is defined by the minutes (max 120 for holding pressure, 30 for heating for period). Hours are used in Pause and Hold the temperature mode, so then the minutes field does not go over 60 in that case, but will for cases where the hours field isn't used.
 
 ## Dedication
