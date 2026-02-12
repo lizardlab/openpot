@@ -53,61 +53,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // requests for bluetooth to be turned on
-        if (btAdapter == null || !btAdapter.isEnabled()) {
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(btAdapter == null || !btAdapter.isEnabled()){
+            Log.d(TAG, "bt adapter is null");
+
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivity(enableIntent);
         }
-        AtomicBoolean haveLocationPerms = new AtomicBoolean(false);
-        ActivityResultLauncher<String[]> locationPermissionRequest =
-                registerForActivityResult(new ActivityResultContracts
-                                .RequestMultiplePermissions(), result -> {
-                            Boolean fineLocationGranted = result.getOrDefault(
-                                    Manifest.permission.ACCESS_FINE_LOCATION, false);
-                            Boolean coarseLocationGranted = result.getOrDefault(
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,false);
-                            if (fineLocationGranted != null && fineLocationGranted) {
-                                // Precise location access granted.
-                                haveLocationPerms.set(true);
-                            }
-                        }
-                );
-        if(!haveLocationPerms.get()){
-            locationPermissionRequest.launch(new String[] {
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            });
-        }
-        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("This app needs location access");
-            builder.setMessage("Please grant location access so this app can detect peripherals.");
-            builder.setPositiveButton(android.R.string.ok, null);
-            builder.setOnDismissListener(dialog -> requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1));
-            builder.show();
-        }
-        if (this.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("This app needs location access");
-            builder.setMessage("Please grant location access so this app can detect peripherals.");
-            builder.setPositiveButton(android.R.string.ok, null);
-            builder.setOnDismissListener(dialog -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN}, 1);
-                }
-            });
-            builder.show();
-        }
-        //bleService.initialize();
-        if (btManager == null) {
-            btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (btManager == null) {
-                Log.e(TAG, "Unable to initialize BluetoothManager.");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
+            }
+            if(this.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN}, 1);
             }
         }
-
-        btAdapter = btManager.getAdapter();
-        if (btAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+        else {
+            if(this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
         }
         connectDevice();
     }
