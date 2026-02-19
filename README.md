@@ -89,18 +89,18 @@ Timers are similarly H:M in BCD format. They are also supplied in the command pa
 | Byte | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
 |      |     PREAMBLE      | UNK     |        UNK   | HR | MM |    | TP | HL | SD |    | ES | PS | CT | CK |
 ```
-| Name     | Description         | Format                                         |
-|----------|---------------------|------------------------------------------------|
-| PREAMBLE | Fixed start message | `aa555a01`                                     |
-| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))(0x08 if N/A)        |
-| HR       | Hour Amount         | Only used for Pause & Temp Hold                |
-| MM       | Minute Duration     | Gives duration of minutes*                     |
-| HL       | Heating Level       | 25% (0x04) 50% (0x08) 75% (0x0c) 100% (0x10)   |
-| SD       | Status Display      | LED (bits 0-2), LCD Message(bits 3-7)          |
-| ES       | Sound Selection     | Duration (bits 0-2), Music (bits 3-5)          |
-| PS       | Priority Selection  | Time (0x00) Pressure (0x20) Temperature (0x20) |
-| CT       | Counter             | Counts from 0x60 up to end of recipe           |
-| CK       | Check Code          | Add previous bytes together XOR with 255 + 1   |
+| Name     | Description         | Format                                                                                                   |
+|----------|---------------------|----------------------------------------------------------------------------------------------------------|
+| PREAMBLE | Fixed start message | `aa555a01`                                                                                               |
+| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))(0x08 if N/A) |
+| HR       | Hour Amount         | Only used for Pause & Temp Hold                                                                          |
+| MM       | Minute Duration     | Gives duration of minutes*                                                                               |
+| HL       | Heating Level       | 25% (0x04) 50% (0x08) 75% (0x0c) 100% (0x10)                                                             |
+| SD       | Status Display      | LED (bits 0-2), LCD Message(bits 3-7)                                                                    |
+| ES       | Sound Selection     | Duration (bits 0-2), Music (bits 3-5)                                                                    |
+| PS       | Priority Selection  | Time (0x00) Pressure (0x20) Temperature (0x40)                                                           |
+| CT       | Counter             | Counts from 0x60 up to end of recipe                                                                     |
+| CK       | Check Code          | Add previous bytes together XOR with 255 + 1                                                             |
 
 ### LED Modes
 | Mode       | Value |
