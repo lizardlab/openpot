@@ -9,6 +9,7 @@ To make this as "future proof" as possible the reverse engineered protocol is de
 
 ### UUIDs
 *Note: for 16 bit UUIDs you use the full UUID of 0000XXXX-0000-1000-8000-00805F9B34FB where the short version replaces the XXXX*
+
 | Description                  | UUID   | Direction  |
 |------------------------------|--------|------------|
 | Control Service              | 0xdab0 | Service    |
@@ -60,14 +61,14 @@ This packet needs to be written (with no response aka "command mode") to 0xdab1.
 | Byte | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
 |      |     PREAMBLE      | UNK| WM |        UNK        |    RT   | TP | HL |          UNK           | CK |
 ```
-| Name     | Description         | Format                                       |
-|----------|---------------------|----------------------------------------------|
-| PREAMBLE | Fixed start message | `aa554002`                                   |
-| WM       | Work Mode           | 1 byte (see table)                           |
-| RT       | Remaining Time      | 2 bytes H:M in BCD                           |
-| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))                     |
-| HL       | Heating Level       | 1 Byte % formula: value / 16 * 100           |
-| CK       | Check Code          | Add previous bytes together XOR with 255 + 1 |
+| Name     | Description         | Format                                                                                      |
+|----------|---------------------|---------------------------------------------------------------------------------------------|
+| PREAMBLE | Fixed start message | `aa554002`                                                                                  |
+| WM       | Work Mode           | 1 byte (see table)                                                                          |
+| RT       | Remaining Time      | 2 bytes H:M in BCD                                                                          |
+| TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md)) |
+| HL       | Heating Level       | 1 Byte % formula: value / 16 * 100                                                          |
+| CK       | Check Code          | Add previous bytes together XOR with 255 + 1                                                |
 
 #### Work Mode
 | Name  | Value   |
@@ -87,12 +88,14 @@ Timers are similarly H:M in BCD format. They are also supplied in the command pa
 ## Recipe Mode
 ```
 | Byte | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
-|      |     PREAMBLE      | UNK     |        UNK   | HR | MM |    | TP | HL | SD |    | ES | PS | CT | CK |
+|      |     PREAMBLE      |    HH   | PA |   UNK   | HR | MM |    | TP | HL | SD |    | ES | PS | CT | CK |
 ```
 | Name     | Description         | Format                                                                                                   |
 |----------|---------------------|----------------------------------------------------------------------------------------------------------|
 | PREAMBLE | Fixed start message | `aa555a01`                                                                                               |
 | TP       | Temperature (AD)    | 1 byte (see [Temperature](https://github.com/lizardlab/openpot/blob/master/TEMPERATURE.md))(0x08 if N/A) |
+| HH       | Heat Hold           | Heat (0x40) Hold (0x41 - 0x43). Followed by (0x20)                                                       |
+| PA       | Pressure Amount     | N/A (0x00) Low (0x20) High (0x30)                                                                        |
 | HR       | Hour Amount         | Only used for Pause & Temp Hold                                                                          |
 | MM       | Minute Duration     | Gives duration of minutes*                                                                               |
 | HL       | Heating Level       | 25% (0x04) 50% (0x08) 75% (0x0c) 100% (0x10)                                                             |
